@@ -1,0 +1,29 @@
+# Node.js projects
+**/node_modules/
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+**/.pnpm-debug.log*
+
+# Next.js projects
+**/.next/
+**/out/
+**/build/
+
+# Environment files
+**/.env*
+
+# Build outputs
+**/*.tsbuildinfo
+**/next-env.d.ts
+
+# OS
+.DS_Store
+**/.DS_Store
+
+# IDEs
+.vscode/
+.idea/
+
+# Vercel
+**/.vercel
