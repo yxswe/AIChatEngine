@@ -5,7 +5,7 @@ import { useState, useTransition } from 'react'
 import { MoreHorizontal, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { clearChats } from '@/lib/actions/chat'
+import { clearChats } from '@/lib/chat-history/chat'
 
 import {
   AlertDialog,

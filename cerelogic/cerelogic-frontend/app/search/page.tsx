@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 
 import { generateId } from 'ai'
 
-import { getModels } from '@/lib/config/models'
+import { ConfigService } from '@/lib/services/get-config'
 
 import { Chat } from '@/components/chat'
 
@@ -17,6 +17,6 @@ export default async function SearchPage(props: {
   }
 
   const id = generateId()
-  const models = await getModels()
+  const models = await ConfigService.getModelList()
   return <Chat id={id} query={q} models={models} />
 }

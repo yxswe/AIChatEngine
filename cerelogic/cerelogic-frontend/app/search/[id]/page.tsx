@@ -1,8 +1,8 @@
 import { notFound, redirect } from 'next/navigation'
 
-import { getChat } from '@/lib/actions/chat'
+import { getChat } from '@/lib/chat-history/chat'
 import { useAuthStore  } from '@/lib/stores/auth'
-import { getModels } from '@/lib/config/models'
+import { ConfigService } from '@/lib/services/get-config'
 import { ExtendedCoreMessage, SearchResults } from '@/lib/types' // Added SearchResults
 import { convertToUIMessages } from '@/lib/utils'
 
@@ -60,10 +60,11 @@ export async function generateMetadata(props: {
 export default async function SearchPage(props: {
   params: Promise<{ id: string }>
 }) {
-  const userId = await getCurrentUserId()
+  const { getUserId } = useAuthStore()
+  const userId = getUserId()
   const { id } = await props.params
 
-  const chat = await getChat(id, userId)
+  const chat = await getChat(id, userId || 'anonymous')
   // convertToUIMessages for useChat hook
   const messages = convertToUIMessages(chat?.messages || [])
 
@@ -75,6 +76,6 @@ export default async function SearchPage(props: {
     notFound()
   }
 
-  const models = await getModels()
+  const models = await ConfigService.getModelList()
   return <Chat id={id} savedMessages={messages} models={models} />
 }
