@@ -10,8 +10,8 @@ file path:
 
 Potential problem: it relies on NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY, not sure if it satisfies security requirements.
 
-## API client
-Chat message managemnet
+## Chat history
+Chat history managemnet
 
 
 
