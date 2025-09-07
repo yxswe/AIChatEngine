@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react'
 
 import { toast } from 'sonner'
 
-import { clearChats } from '@/lib/actions/chat'
+import { clearChats } from '@/lib/chat-history/chat'
 
 import {
   AlertDialog,

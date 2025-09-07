@@ -1,12 +1,9 @@
-'use client' 
-import type { Viewport } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter as FontSans } from 'next/font/google'
 
 import { Analytics } from '@vercel/analytics/next'
 
-import { useAuthStore } from '@/lib/stores/auth'
-import { useAuthListener } from '@/lib/hooks/useAuthListener'
-
+import { createClient } from '@/lib/supabase/server'
 import { cn } from '@/lib/utils'
 
 import { SidebarProvider } from '@/components/ui/sidebar'
@@ -24,9 +21,25 @@ const fontSans = FontSans({
   variable: '--font-sans'
 })
 
-const title = 'CereLogic'
+const title = 'Morphic'
 const description =
   'A fully open-source AI-powered answer engine with a generative UI.'
+
+export const metadata: Metadata = {
+  metadataBase: new URL('https://cerelogic.xyz'),
+  title,
+  description,
+  openGraph: {
+    title,
+    description
+  },
+  twitter: {
+    title,
+    description,
+    card: 'summary_large_image',
+    creator: '@miiura'
+  }
+}
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -40,8 +53,17 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const { user } = useAuthStore()
-  useAuthListener()
+  let user = null
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  if (supabaseUrl && supabaseAnonKey) {
+    const supabase = await createClient()
+    const {
+      data: { user: supabaseUser }
+    } = await supabase.auth.getUser()
+    user = supabaseUser
+  }
 
   return (
     <html lang="en" suppressHydrationWarning>

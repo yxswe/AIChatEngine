@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 
-import { getSharedChat } from '@/lib/actions/chat'
-import { getModels } from '@/lib/config/models'
+import { getSharedChat } from '@/lib/chat-history/chat'
+import { ConfigService } from '@/lib/config/get-config'
 import { convertToUIMessages } from '@/lib/utils'
 
 import { Chat } from '@/components/chat'
@@ -31,7 +31,7 @@ export default async function SharePage(props: {
     return notFound()
   }
 
-  const models = await getModels()
+  const models = await ConfigService.getModelList()
   return (
     <Chat
       id={chat.id}

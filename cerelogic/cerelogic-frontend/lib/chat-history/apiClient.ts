@@ -62,9 +62,11 @@ class ApiClient {
       async (error: AxiosError) => {
         const config = error.config as InternalAxiosRequestConfig & RequestOptions
 
-        if (this.shouldRetry(error) && config?.retries !== 0) {
-          const retryCount = config.retries ?? this.maxRetries
-          config.retries = retryCount - 1
+        if (this.shouldRetry(error) && (config?.retries ?? this.maxRetries) !== 0) {
+          const retryCount = config?.retries ?? this.maxRetries
+          if (config) {
+            config.retries = retryCount - 1
+          }
           
           await this.delay(this.retryDelay)
           return this.instance.request(config)
