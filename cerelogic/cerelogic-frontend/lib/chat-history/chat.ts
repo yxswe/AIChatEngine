@@ -1,72 +1,126 @@
-import { apiClient } from '@/lib/chat-history/apiClient'
+'use client'
+
+import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
 import { type Chat } from '@/lib/types'
 
-export class ChatService {
-  /**
-   * Fetch all chats for a user
-   */
-  static async getChats(userId: string): Promise<Chat[]> {
-    const response = await apiClient.get<Chat[]>(`/chats?userId=${userId}`)
-    return response.data || []
+export async function getChats(userId?: string | null) {
+  if (!userId) {
+    return []
   }
 
-  /**
-   * Fetch chats with pagination
-   */
-  static async getChatsPage(
-    userId: string,
-    limit = 20,
-    offset = 0
-  ): Promise<{ chats: Chat[]; nextOffset: number | null }> {
-    const response = await apiClient.get<{ chats: Chat[]; nextOffset: number | null }>(
-      `/chats/page?userId=${userId}&limit=${limit}&offset=${offset}`
-    )
-    return response.data || { chats: [], nextOffset: null }
+  try {
+    // Import store dynamically to avoid SSR issues
+    const { useChatStore } = await import('@/lib/chat-history/chat-store')
+    const store = useChatStore.getState()
+    return await store.fetchChats(userId)
+  } catch (error) {
+    console.error('Error fetching chats:', error)
+    return []
   }
+}
 
-  /**
-   * Get a specific chat by ID
-   */
-  static async getChat(id: string, userId: string): Promise<Chat | null> {
-    const response = await apiClient.get<Chat>(`/chats/${id}?userId=${userId}`)
-    return response.data
+export async function getChatsPage(
+  userId: string,
+  limit = 20,
+  offset = 0
+): Promise<{ chats: Chat[]; nextOffset: number | null }> {
+  try {
+    const { useChatStore } = await import('@/lib/chat-history/chat-store')
+    const store = useChatStore.getState()
+    return await store.fetchChatsPage(userId, limit, offset)
+  } catch (error) {
+    console.error('Error fetching chat page:', error)
+    return { chats: [], nextOffset: null }
   }
+}
 
-  /**
-   * Save a chat (create or update)
-   */
-  static async saveChat(chat: Chat, userId: string): Promise<Chat> {
-    const response = await apiClient.post<Chat>('/chats', { ...chat, userId })
-    return response.data
+export async function getChat(id: string, userId: string = 'anonymous') {
+  try {
+    const { useChatStore } = await import('@/lib/chat-history/chat-store')
+    const store = useChatStore.getState()
+    return await store.loadChat(id, userId)
+  } catch (error) {
+    console.error('Error fetching chat:', error)
+    return null
   }
+}
 
-  /**
-   * Delete a specific chat
-   */
-  static async deleteChat(chatId: string, userId: string): Promise<void> {
-    await apiClient.delete(`/chats/${chatId}?userId=${userId}`)
+export async function clearChats(
+  userId: string = 'anonymous'
+): Promise<{ error?: string }> {
+  try {
+    const { useChatStore } = await import('@/lib/chat-history/chat-store')
+    const store = useChatStore.getState()
+    const result = await store.clearAllChatsFromServer(userId)
+
+    if (!result.error) {
+      revalidatePath('/')
+      redirect('/')
+    }
+
+    return result
+  } catch (error) {
+    console.error('Error clearing chats:', error)
+    return { error: 'Failed to clear chats' }
   }
+}
 
-  /**
-   * Clear all chats for a user
-   */
-  static async clearChats(userId: string): Promise<void> {
-    await apiClient.delete(`/chats?userId=${userId}`)
+export async function deleteChat(
+  chatId: string,
+  userId = 'anonymous'
+): Promise<{ error?: string }> {
+  try {
+    const { useChatStore } = await import('@/lib/chat-history/chat-store')
+    const store = useChatStore.getState()
+    const result = await store.destroyChat(chatId, userId)
+
+    if (!result.error) {
+      revalidatePath('/')
+    }
+
+    return result
+  } catch (error) {
+    console.error(`Error deleting chat ${chatId}:`, error)
+    return { error: 'Failed to delete chat' }
   }
+}
 
-  /**
-   * Share a chat (make it publicly accessible)
-   */
-  static async shareChat(id: string, userId: string): Promise<Chat> {
-    const response = await apiClient.post<Chat>(`/chats/${id}/share`, { userId })
-    return response.data
+export async function saveChat(chat: Chat, userId: string = 'anonymous') {
+  try {
+    const { useChatStore } = await import('@/lib/chat-history/chat-store')
+    const store = useChatStore.getState()
+    const savedChat = await store.persistChat(chat, userId)
+
+    revalidatePath('/')
+    return savedChat
+  } catch (error) {
+    console.error('Error saving chat:', error)
+    throw error
   }
+}
 
-  /**
-   * Get a shared chat by ID (public access)
-   */
-  static async getSharedChat(id: string): Promise<Chat | null> {
-    const response = await apiClient.get<Chat>(`/chats/${id}/shared`)
-    return response.data
+export async function getSharedChat(id: string) {
+  try {
+    const { useChatStore } = await import('@/lib/chat-history/chat-store')
+    const store = useChatStore.getState()
+    return await store.getSharedChat(id)
+  } catch (error) {
+    console.error('Error fetching shared chat:', error)
+    return null
+  }
+}
+
+export async function shareChat(id: string, userId: string = 'anonymous') {
+  try {
+    const { useChatStore } = await import('@/lib/chat-history/chat-store')
+    const store = useChatStore.getState()
+    const sharedChat = await store.shareChat(id, userId)
+
+    revalidatePath('/')
+    return sharedChat
+  } catch (error) {
+    console.error('Error sharing chat:', error)
+    return null
   }
 }
