@@ -1,7 +1,7 @@
 'use client'
 
 import { User2 } from 'lucide-react'
-import { useAuthStore } from '@/lib/stores/auth'
+import { useAuthStore } from '@/lib/supabase/client'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 export const CurrentUserAvatar = () => {

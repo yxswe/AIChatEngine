@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-import { useAuthStore } from '@/lib/stores/auth'
+import { useAuthStore } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils/index'
 
 import { Button } from '@/components/ui/button'

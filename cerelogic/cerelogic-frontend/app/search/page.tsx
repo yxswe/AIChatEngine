@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 
 import { generateId } from 'ai'
 
-import { ConfigService } from '@/lib/services/get-config'
+import { ConfigService } from '@/lib/config/get-config'
 
 import { Chat } from '@/components/chat'
 

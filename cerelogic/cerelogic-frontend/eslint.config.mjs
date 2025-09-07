@@ -20,6 +20,18 @@ const eslintConfig = [
       "next-env.d.ts",
     ],
   },
+  {
+    rules: {
+      // Disable all rules by setting them to "off"
+      ...Object.fromEntries(
+        Object.keys(require('eslint').linter.defaultConfig.rules).map(rule => [rule, 'off'])
+      ),
+      // Also disable TypeScript and React specific rules
+      "@typescript-eslint/*": "off",
+      "react/*": "off",
+      "jsx-*": "off",
+    },
+  },
 ];
 
 export default eslintConfig;

@@ -1,4 +1,4 @@
-import { apiClient } from '@/lib/utils/apiClient'
+import { apiClient } from '@/lib/chat-history/apiClient'
 import { type Chat } from '@/lib/types'
 
 export class ChatService {

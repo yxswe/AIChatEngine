@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { User } from '@supabase/supabase-js'
 import { Link2, LogOut, Palette } from 'lucide-react'
 
-import { useAuthStore } from '@/lib/stores/auth'
+import { useAuthStore } from '@/lib/supabase/client'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {

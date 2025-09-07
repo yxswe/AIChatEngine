@@ -1,8 +1,8 @@
 import { notFound, redirect } from 'next/navigation'
 
 import { getChat } from '@/lib/chat-history/chat'
-import { useAuthStore  } from '@/lib/stores/auth'
-import { ConfigService } from '@/lib/services/get-config'
+import { useAuthStore  } from '@/lib/supabase/client'
+import { ConfigService } from '@/lib/config/get-config'
 import { ExtendedCoreMessage, SearchResults } from '@/lib/types' // Added SearchResults
 import { convertToUIMessages } from '@/lib/utils'
 
